@@ -1,1 +1,8 @@
-.artifacts
+# Local artifacts and Python cache files
+.artifacts/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
