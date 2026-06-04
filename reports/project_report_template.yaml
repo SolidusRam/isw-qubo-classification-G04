@@ -12,12 +12,12 @@
 
 schema_version: "1.0"
 
-group_id: "GXX"
-repository_url: "https://github.com/..."
+group_id: "G04"
+repository_url: "https://github.com/SolidusRam/isw-qubo-classification-G04"
 submission_date: "YYYY-MM-DD"
 
 students:
-  - student_id: "60/61/XXXXX"        #Matricola completa
+  - student_id: "60/61/66469"        #Matricola completa
     role_in_project:
       - "preprocessing"
       - "feature_selection"
@@ -25,7 +25,7 @@ students:
       - "testing"
       - "documentation"
       - "gui"
-  - student_id: "60/61/XXXXX"        #Matricola completa
+  - student_id: "60/61/66470"        #Matricola completa
     role_in_project:
       - "preprocessing"
       - "feature_selection"

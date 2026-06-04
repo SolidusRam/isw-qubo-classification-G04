@@ -21,5 +21,6 @@ You are an expert documentation assistant. The user wants to document the curren
 - Put a summary of the LLM responses (or the exact code generated) in the `LLM response` section.
 - State whether the generated code was used explicitly (e.g. without changes, or modified).
 - Fill out the assessment scale out of 5 based on how successfully the task was completed in the chat.
+- **IMPORTANT**: ONLY save and log necessary project source code files (e.g. `.py`, `.ipynb`, or explicitly requested files) into the `reports/llm_usage/files/` directory. Explicitly EXCLUDE system-generated agent artifacts such as `implementation_plan.md`, `task.md`, or `walkthrough.md` from being copied or logged.
 
 Do not ask for permission, just use the `edit_file` or `create_file` tools to write directly into `reports/llm_usage/LOG-G04-XX.md`.
