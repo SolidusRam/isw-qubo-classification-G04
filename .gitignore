@@ -7,6 +7,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .github/
+.vscode/
 
 # OS generated files
 .DS_Store
