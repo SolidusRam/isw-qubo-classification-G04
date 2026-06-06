@@ -8,4 +8,3 @@ joblib
 pytest
 streamlit
 PyYAML
-lightgbm

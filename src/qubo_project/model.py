@@ -2,9 +2,8 @@ import argparse
 import json
 import time
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
-from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score, confusion_matrix
 import joblib
 
@@ -31,8 +30,8 @@ def train(
     
     if classifier == "random_forest":
         model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=seed, n_jobs=-1)
-    elif classifier == "lightgbm":
-        model = LGBMClassifier(is_unbalance=True, random_state=seed, n_jobs=-1)
+    elif classifier == "gradient_boosting":
+        model = GradientBoostingClassifier(random_state=seed)
     elif classifier == "logistic_regression":
         model = LogisticRegression(class_weight='balanced', random_state=seed, max_iter=1000, n_jobs=-1)
     else:
@@ -140,7 +139,7 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(dest="command", required=True)
     
     train_parser = subparsers.add_parser("train")
-    train_parser.add_argument("--classifier", type=str, required=True, choices=["random_forest", "lightgbm", "logistic_regression"])
+    train_parser.add_argument("--classifier", type=str, required=True, choices=["random_forest", "gradient_boosting", "logistic_regression"])
     train_parser.add_argument("--in-reduced", type=str, required=True)
     train_parser.add_argument("--target", type=str, required=True)
     train_parser.add_argument("--out-model", type=str, required=True)
