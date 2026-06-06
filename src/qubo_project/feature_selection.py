@@ -17,7 +17,8 @@ def select_features(
     percSelected: float = 0.20,
     allowance: int = 1,
     seed: int = 42,
-    alpha_computations: int = 100
+    alpha_computations: int = 100,
+    max_samples_corr: int = 20000
 ):
     np.random.seed(seed)
     
@@ -29,7 +30,14 @@ def select_features(
     
     # 2. Calcolo matrice di correlazione di Spearman
     t0_corr = time.time()
-    corr_matrix = df.corr(method='spearman').abs()
+    
+    # Sottocampionamento per accelerare il calcolo di Spearman su dataset molto grandi
+    if max_samples_corr is not None and len(df) > max_samples_corr:
+        df_for_corr = df.sample(n=max_samples_corr, random_state=seed)
+    else:
+        df_for_corr = df
+        
+    corr_matrix = df_for_corr.corr(method='spearman').abs()
     
     rho_V = corr_matrix.loc[features, target_column].values
     rho_U = corr_matrix.loc[features, features].values
@@ -150,6 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--perc-test", type=float, default=0.30)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--alpha-computations", type=int, default=100)
+    parser.add_argument("--max-samples-corr", type=int, default=20000, help="Max sample size for Spearman correlation")
     
     args = parser.parse_args()
     
@@ -164,5 +173,6 @@ if __name__ == "__main__":
         percSelected=args.perc_selected,
         allowance=args.allowance,
         seed=args.seed,
-        alpha_computations=args.alpha_computations
+        alpha_computations=args.alpha_computations,
+        max_samples_corr=args.max_samples_corr
     )
