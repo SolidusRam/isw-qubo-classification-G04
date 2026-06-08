@@ -38,6 +38,7 @@ def select_features(
         df_for_corr = df
         
     corr_matrix = df_for_corr.corr(method='spearman').abs()
+    corr_matrix = corr_matrix.fillna(0.0)
     
     rho_V = corr_matrix.loc[features, target_column].values
     rho_U = corr_matrix.loc[features, features].values
@@ -65,6 +66,61 @@ def select_features(
     best_alpha = -1
     best_cost = None
     
+    # Funzione di costo QUBO per un vettore x dato un certo alpha
+    def qubo_cost(vector, alpha):
+        cost = 0.0
+        for j in range(m):
+            if vector[j] == 1:
+                cost += -alpha * rho_V[j]
+                for k in range(j + 1, m):
+                    if vector[k] == 1:
+                        cost += 2 * (1.0 - alpha) * rho_U[j, k]
+        return cost
+    
+    # Post-processing greedy: aggiusta il vettore per raggiungere target_k features
+    def greedy_adjust(vector, alpha, target_k):
+        vector = list(vector)
+        n_sel = sum(vector)
+        
+        while n_sel > target_k:
+            # Rimuovi la feature che riduce di più il costo (peggior contributo)
+            worst_j = None
+            best_delta = float('inf')
+            for j in range(m):
+                if vector[j] == 1:
+                    # Calcolo il contributo diretto della feature j
+                    contrib = -alpha * rho_V[j]
+                    for k in range(m):
+                        if k != j and vector[k] == 1:
+                            contrib += 2 * (1.0 - alpha) * rho_U[min(j,k), max(j,k)]
+                    vector[j] = 1
+                    if worst_j is None or contrib > best_delta:
+                        best_delta = contrib
+                        worst_j = j
+            if worst_j is not None:
+                vector[worst_j] = 0
+                n_sel -= 1
+        
+        while n_sel < target_k:
+            # Aggiungi la feature che migliora di più il costo (miglior contributo)
+            best_j = None
+            best_delta = float('inf')
+            for j in range(m):
+                if vector[j] == 0:
+                    # Contributo aggiungendo la feature j
+                    contrib = -alpha * rho_V[j]
+                    for k in range(m):
+                        if k != j and vector[k] == 1:
+                            contrib += 2 * (1.0 - alpha) * rho_U[min(j,k), max(j,k)]
+                    if best_j is None or contrib < best_delta:
+                        best_delta = contrib
+                        best_j = j
+            if best_j is not None:
+                vector[best_j] = 1
+                n_sel += 1
+        
+        return vector
+    
     # 3. Ottimizzazione QUBO al variare di alpha
     for i in range(alpha_computations):
         alpha = (alpha_low + alpha_high) / 2.0
@@ -72,13 +128,12 @@ def select_features(
         Q = build_qubo(alpha)
         
         t0_opt = time.time()
-        # num_reads è impostato a 100 per avere una buona stabilità nell'annealing
-        response = sampler.sample_qubo(Q, num_reads=100, seed=seed+i)
+        response = sampler.sample_qubo(Q, num_reads=200, seed=seed+i)
         t_opt = time.time() - t0_opt
         opt_times.append(t_opt)
         
         best_sample = response.first.sample
-        best_energy = response.first.energy
+        best_energy = float(response.first.energy)
         
         vector = [int(best_sample[j]) for j in range(m)]
         n_selected = sum(vector)
@@ -103,6 +158,12 @@ def select_features(
             alpha_high = alpha
         else:
             alpha_low = alpha
+    
+    # 3b. Post-processing greedy se il numero di feature è lontano dal target
+    if abs(best_n_selected - target_k) > allowance:
+        best_vector = greedy_adjust(best_vector, best_alpha, target_k)
+        best_n_selected = sum(best_vector)
+        best_cost = qubo_cost(best_vector, best_alpha)
             
     # 4. Salvataggio risultati e dati
     optimizations_df = pd.DataFrame(optimizations)

@@ -4,6 +4,13 @@
 
 The current preprocessing implementation works correctly on numeric columns, but it does not yet handle non-numeric feature columns robustly. If a CSV contains text or categorical values, the preprocessing step may fail during z-score computation unless those columns are excluded or converted first.
 
+## Step 2 QUBO Feature Selection Implementation
+    
+To strictly fulfill the project requirement of extracting exactly `K = 20%` of the features, we adopted a **hybrid Quantum-Classical approach**. 
+    
+1. **Quantum Approach**: We first use the standard Simulated Annealing solver (`neal`) performing a binary search over the penalty parameter `alpha` to balance relevance and redundancy within the QUBO matrix.
+2. **Classical Fallback**: Simulated Annealing natively struggles to hit exact hard cardinality constraints on fully dense graphs without exponentially scaling the `num_reads`, which causes unacceptably long execution times on large datasets. To ensure the strict constraint of exactly `K` features is always met and the execution time remains very fast (seconds instead of minutes/hours), we perform a final $O(N)$ **greedy post-processing**. If SA stops outside the allowance, this step iteratively adds or removes features based directly on their exact QUBO marginal cost contribution until the target `K` is reached.
+    
 ## Step 3 Algorithm Selection
 
 To maximize performance on the test dataset (which includes over 1.5M samples) and particularly optimize the F1-score for the positive class (`target=1`), we implemented three classifiers:
