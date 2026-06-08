@@ -1,0 +1,185 @@
+# ============================================================
+# Template report progetto
+# Classificazione binaria con feature reduction QUBO
+# Formato: YAML
+#
+# Compilare tutti i campi applicabili.
+# Usare null quando un dato non è disponibile.
+# Non inserire qui prompt completi o risposte degli LLM:
+# saranno raccolti in un template separato.
+# Utilizzare l'inglese per le risposte testuali
+# ============================================================
+
+schema_version: "1.0"
+
+group_id: "G04"
+repository_url: "https://github.com/SolidusRam/isw-qubo-classification-G04"
+submission_date: "2026-06-08"
+
+students:
+  - student_id: "66469"
+    role_in_project:
+      - "preprocessing"
+      - "feature_selection"
+      - "classification"
+      - "testing"
+      - "documentation"
+      - "gui"
+  - student_id: "66474"
+    role_in_project:
+      - "preprocessing"
+      - "feature_selection"
+      - "classification"
+      - "testing"
+      - "documentation"
+      - "gui"
+
+team_work:
+  work_distribution:
+    design_percent: 50
+    preprocessing_percent: 50
+    qubo_feature_selection_percent: 50
+    classification_percent: 50
+    testing_percent: 50
+    gui_percent: 50
+    documentation_percent: 50
+  collaboration_mode:
+    type: "divisione_per_moduli"
+    notes: "Evenly split the work modules."
+    remote_collaboration_perc: 25
+  estimated_total_hours:
+    student_1_hours: 20
+    student_2_hours: 20
+    total_group_hours: 40
+
+initial_context:
+  prior_experience:
+    python: "basic"
+    pandas_numpy: "basic"
+    scikit_learn: "basic"
+    machine_learning: "basic"
+    classification: "basic"
+    feature_selection: "none"
+    optimization: "none"
+    QUBO: "none"
+    git_github: "basic"
+  initial_confidence:
+    python_project_development: 3
+    qubo_formulation: 1
+    machine_learning: 2
+    debugging: 3
+    validating_llm_outputs: 3
+
+design_choices:
+  correlation_computation: "Spearman"
+  QUBO_optimization_algorithm:
+    algorithm_name: "Simulated Annealing"
+    library_used: "neal"
+    reason_for_choice: "We chose Simulated Annealing because it is provided by the D-Wave Neal library and is standard for solving QUBO problems without quantum hardware."
+  classification_algorithm:
+    algorithm_name: "Random Forest, HistGradientBoosting, Logistic Regression"
+    library_used: "scikit-learn"
+    reason_for_choice: "We chose Random Forest, HistGradientBoosting, and Logistic Regression to compare different approaches (ensemble vs linear) and find the best performance."
+  gui_development: "Streamlit"
+  problems_encountered:
+    - problem: "Formulating the QUBO matrix correctly."
+      solution: "Studied the documentation and used LLM suggestions to map correlations to QUBO weights."
+  notes: null
+
+llm_usage_summary:
+  llms_used:
+    - name: "Gemini 3.1 Pro"
+      version: "3.1 Pro"
+      paid_subscription: true
+      usage_level_0_to_3:
+        value: 3
+  phases_where_llm_was_used:
+    requirements_understanding:
+      usage_level_0_to_3: 2
+      usefulness_1_to_5: 4
+      notes: "Helped clarify the QUBO formulation."
+    preprocessing:
+      usage_level_0_to_3: 2
+      usefulness_1_to_5: 4
+      notes: "Standard pandas operations."
+    qubo_formulation:
+      usage_level_0_to_3: 3
+      usefulness_1_to_5: 5
+      notes: "Crucial for understanding how to build the matrix."
+    optimizer_selection:
+      usage_level_0_to_3: 2
+      usefulness_1_to_5: 4
+      notes: "Suggested Simulated Annealing."
+    classifier_selection:
+      usage_level_0_to_3: 2
+      usefulness_1_to_5: 4
+      notes: "Suggested baseline models."
+    debugging:
+      usage_level_0_to_3: 3
+      usefulness_1_to_5: 5
+      notes: "Fixed some incorrect library calls."
+    testing:
+      usage_level_0_to_3: 1
+      usefulness_1_to_5: 3
+      notes: null
+    documentation:
+      usage_level_0_to_3: 2
+      usefulness_1_to_5: 4
+      notes: null
+    gui:
+      usage_level_0_to_3: 3
+      usefulness_1_to_5: 5
+      notes: "Generated Streamlit boilerplate quickly."
+  estimated_llm_contribution:
+    percent_code_generated_or_suggested_by_llm: 60
+    percent_code_accepted_without_major_changes: 40
+    percent_documentation_generated_or_suggested_by_llm: 50
+  human_verification:
+    methods_used:
+      - code_execution: "yes"
+      - automated_tests: "partially"
+      - critical_reading: "yes"
+      - comparison_with_other_llm: "no"
+    notes: "We reviewed the generated code and ran tests to verify correctness."
+  llm_misleading_outputs:
+    encountered: "yes"
+    examples_count: 2
+    categories:
+      wrong_python_code: "no"
+      wrong_library_usage: "yes"
+      wrong_qubo_formulation: "partially"
+      wrong_ml_methodology: "no"
+      hallucinated_api_or_function: "no"
+      other: null
+    impact_on_project: 2
+  llm_overall_assessment:  
+    productivity_improvement_1_to_5: 4
+    learning_support_1_to_5: 5
+    risk_of_overreliance_1_to_5: 3
+    trust_in_llm_outputs_1_to_5: 4
+    would_use_again: "yes"
+    notes: null
+  most_useful_project_activity: "Developing the GUI with Streamlit."
+  most_difficult_project_activity: "Formulating the QUBO matrix correctly was initially difficult."
+  main_lessons_learned:
+    - "QUBO is a powerful way to map optimization problems."
+    - "Streamlit enables fast prototyping of data apps."
+  main_problems:
+    - problem: "Spent too much time prompt engineering."
+      severity_1_to_5: 3
+      how_resolved: "Refined our prompts to be more specific."
+
+final_results:
+  what_worked_well:
+    - "The QUBO feature selection worked surprisingly well."
+    - "Streamlit GUI was easy to build."
+  what_did_not_work_well:
+    - "Prompting the LLM sometimes took longer than writing the code manually."
+  main_benefit_of_using_llm: "It significantly sped up the development of the boilerplate code and the Streamlit UI."
+  main_problem_of_using_llm: "We spent too much time prompt engineering."
+  surprising_findings:
+    - "Feature selection with QUBO can be done efficiently using simulated annealing."
+  limitations_of_the_solution:
+    - "Simulated annealing is a heuristic, so it may not find the global optimum."
+  threats_to_validity_from_team_perspective:
+    - "Small dataset size may not generalize well."

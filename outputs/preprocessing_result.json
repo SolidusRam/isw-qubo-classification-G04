@@ -1,14 +1,17 @@
 {
   "n_input_features": 146,
-  "n_kept_features": 100,
-  "dataset_size": 20000,
-  "dataset_input_time": 0.1486,
-  "dataset_processing_time": 0.0745,
+  "n_kept_features": 104,
+  "dataset_size": 100,
+  "dataset_input_time": 0.0025,
+  "dataset_processing_time": 0.0322,
   "dropped_feature_names": [
     "member_id",
     "pymnt_plan",
-    "total_rec_late_fee",
     "collections_12_mths_ex_med",
+    "application_type",
+    "annual_inc_joint",
+    "dti_joint",
+    "verification_status_joint",
     "acc_now_delinq",
     "chargeoff_within_12_mths",
     "delinq_amnt",
@@ -43,13 +46,6 @@
     "orig_projected_additional_accrued_interest",
     "hardship_payoff_balance_amount",
     "hardship_last_payment_amount",
-    "disbursement_method",
-    "debt_settlement_flag",
-    "debt_settlement_flag_date",
-    "settlement_status",
-    "settlement_date",
-    "settlement_amount",
-    "settlement_percentage",
-    "settlement_term"
+    "disbursement_method"
   ]
 }
