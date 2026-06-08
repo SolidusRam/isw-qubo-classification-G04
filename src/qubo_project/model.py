@@ -2,7 +2,7 @@ import argparse
 import json
 import time
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score, confusion_matrix
 import joblib
@@ -31,7 +31,7 @@ def train(
     if classifier == "random_forest":
         model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=seed, n_jobs=-1)
     elif classifier == "gradient_boosting":
-        model = GradientBoostingClassifier(random_state=seed)
+        model = HistGradientBoostingClassifier(random_state=seed)
     elif classifier == "logistic_regression":
         model = LogisticRegression(class_weight='balanced', random_state=seed, max_iter=1000, n_jobs=-1)
     else:

@@ -57,7 +57,7 @@ def main():
                     f.write(uploaded_file.getbuffer())
                 st.success("File caricato!")
         else:
-            input_csv = st.text_input("Inserisci il percorso al file CSV (es. data/sample_test_dataset.csv)")
+            input_csv = st.text_input("Inserisci il percorso al file CSV", value="data/input_dataset.csv")
 
         target_col = st.text_input("Nome colonna Target", "target")
         min_perc_valid = st.slider("Percentuale minima dati validi (es. 0.05 = 5%)", 0.01, 1.0, 0.05, step=0.01)
@@ -116,10 +116,12 @@ def main():
         out_optim = st.text_input("Output QUBO optims CSV", os.path.join(OUTPUT_DIR, "optimizations.csv"))
         out_json = st.text_input("Output statistiche JSON", os.path.join(OUTPUT_DIR, "feature_selection_result.json"))
 
-        if st.button("Avvia Feature Selection (QUBO)", type="primary"):
-            if not os.path.exists(norm_csv):
-                st.error("Il dataset normalizzato non esiste. Esegui prima la Fase 1!")
-            else:
+        can_run = os.path.exists(norm_csv)
+        if not can_run:
+            st.warning("⚠️ Esegui prima la Fase 1 per generare il dataset normalizzato.")
+
+        if st.button("Avvia Feature Selection (QUBO)", type="primary", disabled=not can_run):
+            if True:
                 with st.spinner("Calcolo Matrice Q e Ottimizzazione in corso (potrebbe richiedere tempo)..."):
                     try:
                         select_features(
@@ -159,16 +161,18 @@ def main():
         train_csv = st.text_input("Training Dataset ridotto", os.path.join(OUTPUT_DIR, "training_reduced.csv"))
         target_col = st.text_input("Nome colonna Target", "target")
         
-        classifier = st.selectbox("Algoritmo di Classificazione", ["random_forest", "gradient_boosting", "logistic_regression"])
+        classifier = st.radio("Algoritmo di Classificazione", ["random_forest", "gradient_boosting", "logistic_regression"])
         seed = st.number_input("Seed", value=42)
         
         out_model = st.text_input("Salvataggio Modello (.joblib)", os.path.join(OUTPUT_DIR, "model.joblib"))
         out_json = st.text_input("Salvataggio Metriche", os.path.join(OUTPUT_DIR, "training_metrics.json"))
 
-        if st.button("Addestra Modello", type="primary"):
-            if not os.path.exists(train_csv):
-                st.error("Il dataset di training non esiste. Esegui la Fase 2!")
-            else:
+        can_run = os.path.exists(train_csv)
+        if not can_run:
+            st.warning("⚠️ Esegui prima la Fase 2 per generare il dataset di training.")
+
+        if st.button("Addestra Modello", type="primary", disabled=not can_run):
+            if True:
                 with st.spinner(f"Addestramento {classifier} in corso..."):
                     try:
                         train(
@@ -201,12 +205,19 @@ def main():
         out_preds = st.text_input("Output Predizioni CSV", os.path.join(OUTPUT_DIR, "predictions.csv"))
         out_stats = st.text_input("Output Statistiche Classificazione", os.path.join(OUTPUT_DIR, "classification_stats.json"))
 
-        if st.button("Genera Predizioni", type="primary"):
-            if not os.path.exists(test_csv):
-                st.error("Il dataset di test non esiste!")
-            elif not os.path.exists(model_path):
-                st.error("Il modello addestrato non esiste. Esegui la Fase 3!")
-            else:
+        can_run = True
+        if not os.path.exists(test_csv):
+            st.warning("⚠️ Dataset di test mancante. Esegui la Fase 2.")
+            can_run = False
+        elif not os.path.exists(model_path):
+            st.warning("⚠️ Modello mancante. Esegui la Fase 3.")
+            can_run = False
+        elif os.path.getmtime(model_path) < os.path.getmtime(test_csv):
+            st.warning("⚠️ Attenzione: Il dataset è stato modificato dopo l'ultimo addestramento. Ri-addestra il modello (Fase 3) per evitare errori di dimensione.")
+            can_run = False
+
+        if st.button("Genera Predizioni", type="primary", disabled=not can_run):
+            if True:
                 with st.spinner("Predizione in corso..."):
                     try:
                         predict(
