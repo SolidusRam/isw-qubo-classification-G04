@@ -31,9 +31,9 @@ def train(
     if classifier == "random_forest":
         model = RandomForestClassifier(n_estimators=100, class_weight='balanced', random_state=seed, n_jobs=-1)
     elif classifier == "gradient_boosting":
-        model = HistGradientBoostingClassifier(random_state=seed)
+        model = HistGradientBoostingClassifier(random_state=seed, class_weight='balanced')
     elif classifier == "logistic_regression":
-        model = LogisticRegression(class_weight='balanced', random_state=seed, max_iter=1000, n_jobs=-1)
+        model = LogisticRegression(class_weight='balanced', random_state=seed, max_iter=1000)
     else:
         raise ValueError(f"Unknown classifier: {classifier}")
         
