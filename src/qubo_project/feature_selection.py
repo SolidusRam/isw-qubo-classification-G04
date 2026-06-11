@@ -6,6 +6,9 @@ import numpy as np
 import neal
 from sklearn.model_selection import train_test_split
 
+# Limite interno per sottocampionamento Spearman su dataset grandi
+_MAX_SAMPLES_CORR = 20000
+
 def select_features(
     normalized_csv: str,
     reducedTrain_csv: str,
@@ -17,8 +20,7 @@ def select_features(
     percSelected: float = 0.20,
     allowance: int = 1,
     seed: int = 42,
-    alpha_computations: int = 100,
-    max_samples_corr: int = 20000
+    alpha_computations: int = 100
 ):
     np.random.seed(seed)
     
@@ -28,14 +30,18 @@ def select_features(
     m = len(features)
     target_k = int(round(percSelected * m))
     
-    # 2. Calcolo matrice di correlazione di Spearman
+    # Split: primi M righe per training (necessario per evitare data leakage)
+    M = int(len(df) * (1 - percTest))
+    df_train = df.iloc[:M]
+    
+    # 2. Calcolo matrice di correlazione di Spearman (solo su training set)
     t0_corr = time.time()
     
     # Sottocampionamento per accelerare il calcolo di Spearman su dataset molto grandi
-    if max_samples_corr is not None and len(df) > max_samples_corr:
-        df_for_corr = df.sample(n=max_samples_corr, random_state=seed)
+    if len(df_train) > _MAX_SAMPLES_CORR:
+        df_for_corr = df_train.sample(n=_MAX_SAMPLES_CORR, random_state=seed)
     else:
-        df_for_corr = df
+        df_for_corr = df_train
         
     corr_matrix = df_for_corr.corr(method='spearman').abs()
     corr_matrix = corr_matrix.fillna(0.0)
@@ -93,7 +99,6 @@ def select_features(
                     for k in range(m):
                         if k != j and vector[k] == 1:
                             contrib += 2 * (1.0 - alpha) * rho_U[min(j,k), max(j,k)]
-                    vector[j] = 1
                     if worst_j is None or contrib > best_delta:
                         best_delta = contrib
                         worst_j = j
@@ -176,7 +181,7 @@ def select_features(
     df_reduced = df[columns_to_keep]
     
     # Suddivisione dataset mantenendo l'ordine (primi M per training)
-    M = int(len(df_reduced) * (1 - percTest))
+    # M è già stato calcolato sopra per il calcolo delle correlazioni
     train_df = df_reduced.iloc[:M]
     test_df = df_reduced.iloc[M:]
     
@@ -219,8 +224,6 @@ if __name__ == "__main__":
     parser.add_argument("--perc-test", type=float, default=0.30)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--alpha-computations", type=int, default=100)
-    parser.add_argument("--max-samples-corr", type=int, default=20000, help="Max sample size for Spearman correlation")
-    
     args = parser.parse_args()
     
     select_features(
@@ -234,6 +237,5 @@ if __name__ == "__main__":
         percSelected=args.perc_selected,
         allowance=args.allowance,
         seed=args.seed,
-        alpha_computations=args.alpha_computations,
-        max_samples_corr=args.max_samples_corr
+        alpha_computations=args.alpha_computations
     )

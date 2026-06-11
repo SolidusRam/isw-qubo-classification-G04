@@ -4,7 +4,7 @@ students:
   - matricola: "66474"
 main_llm_used: "Gemini 3.1 Pro"
 paid_subscription_used: true
-second_llm_used: "*****"
+second_llm_used: "Claude Opus 4"
 third_llm_used: ""
-notes: ""
-project_finished: "false"    # Mettere "true" se consegnato
+notes: "Feature selection con QUBO via simulated annealing (neal). Sottocampionamento Spearman a 20000 righe per scalabilità. Tre classificatori: Random Forest, HistGradientBoosting, Logistic Regression."
+project_finished: "true"

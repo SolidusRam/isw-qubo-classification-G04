@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import shutil
 import tempfile
@@ -143,7 +144,7 @@ def test_cli(temp_dir):
     
     # Execute preprocessing.py as a script
     cmd = [
-        ".venv/bin/python",
+        sys.executable,
         "src/qubo_project/preprocessing.py",
         "--input", input_csv,
         "--target", "target",
